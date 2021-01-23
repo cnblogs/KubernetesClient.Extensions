@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using k8s;
 using Microsoft.Extensions.Configuration;
 
-namespace k8s.Extensions
+namespace Microsoft.Extensions.Configuration
 {
     public static class ConfigMapExtensions
     {
