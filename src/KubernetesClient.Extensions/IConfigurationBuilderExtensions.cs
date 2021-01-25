@@ -14,13 +14,19 @@ namespace Microsoft.Extensions.Configuration
             return builder.AddJsonKubeConfigMap(nameAndKey, @namespace, nameAndKey);
         }
 
-        public static IConfigurationBuilder AddJsonKubeConfigMap(this IConfigurationBuilder builder, string name, string @namespace, string key)
+        public static IConfigurationBuilder AddJsonKubeConfigMap(this IConfigurationBuilder builder, string name, string @namespace, string key, bool onlyInCluster = true)
         {
-            var config = KubernetesClientConfiguration.IsInCluster() ?
+            var isInCluster = KubernetesClientConfiguration.IsInCluster();
+            if (onlyInCluster && !isInCluster)
+            {
+                return builder;
+            }
+
+            var config = isInCluster ?
                 KubernetesClientConfiguration.InClusterConfig() :
                 KubernetesClientConfiguration.BuildDefaultConfig();
-            IKubernetes client = new Kubernetes(config);
 
+            IKubernetes client = new Kubernetes(config);
             var json = client.ReadNamespacedConfigMap(name, @namespace)?.Data[key];
             if (!string.IsNullOrEmpty(json))
             {
